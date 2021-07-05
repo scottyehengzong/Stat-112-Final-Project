@@ -1,0 +1,330 @@
+---
+title: "Untitled"
+author: "Scott Yeheng Zong"
+date: "7/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_data}
+library(tidyverse)
+library(lubridate)
+library(openintro)     
+library(maps) 
+library(ggmap)
+library(gplots) 
+library(RColorBrewer)
+library(sf)
+library(ggthemes)
+theme_set(theme_minimal())
+education <- read_csv("education.csv")
+population <- read_csv("population2019.csv")
+education_MN <-
+  education %>% 
+  filter(State == "Minnesota")
+```
+Generally
+1.1
+```{r}
+states_map <- map_data("state")
+
+education %>% 
+  filter(Sex == "Total" & `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(total_degree_holders = sum(`Bachelor's Degree Holders`)) %>% 
+  ggplot()+
+  geom_map(map = states_map,
+           aes(map_id = str_to_lower(State),
+               fill = total_degree_holders))+
+  scale_fill_gradient(low = "cyan",
+                      high = "blue",
+                      space = "Lab",
+                      na.value = "grey50",
+                      guide = "colourbar",
+                      aesthetics = "fill")+
+  expand_limits(x = states_map$long, 
+                y = states_map$lat)+
+  labs(title = "Number of Bachelor's degree holders in US")+
+  theme_map() +
+  theme(legend.background = element_blank())
+  
+```
+
+1.2
+```{r}
+states_map <- map_data("state")
+
+education %>% 
+  filter(Sex == "Total" & `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(total_degree_holders = sum(`Bachelor's Degree Holders`)) %>% 
+  left_join(population,
+            by =c("State" = "STATE")) %>% 
+  mutate(degree_holders_per_10000 = 10000*total_degree_holders/POPESTIMATE2019) %>%
+  ggplot()+
+  geom_map(map = states_map,
+           aes(map_id = str_to_lower(State),
+               fill = degree_holders_per_10000))+
+  scale_fill_gradient(low = "pink",
+                      high = "darkblue",
+                      space = "Lab",
+                      na.value = "grey50",
+                      guide = "colourbar",
+                      aesthetics = "fill")+
+  expand_limits(x = states_map$long, 
+                y = states_map$lat)+
+  labs(title = "Number of Bachelor's degree holders per 10000 population in US")+
+  theme_map() +
+  theme(legend.background = element_blank())
+  
+```
+
+
+Major distribution
+2.1
+```{r}
+education %>% 
+  filter(Sex == "Total" & `Age Group`!="25 and older") %>% 
+  summarize(total_degree_holders = sum(`Bachelor's Degree Holders`),
+            SE = round(sum(`Science and Engineering`)/total_degree_holders,4),
+            SE_related = round(sum(`Science and Engineering Related Fields`)/total_degree_holders,4),
+            Business = round(sum(Business)/total_degree_holders,4),
+            Education = round(sum(Education)/total_degree_holders,4),
+            Arts = round(sum(`Arts, Humanities and Others`)/total_degree_holders,2)) %>% 
+  pivot_longer(-total_degree_holders) %>% 
+  select(-total_degree_holders) %>% 
+  ggplot(aes(x = 2,
+             y = value,
+             fill = name))+
+  geom_col(color = "white")+
+  coord_polar(theta = "y", start = 1.65)+
+  geom_text(aes(x = 1,
+                label = paste0(value*100,"%")),
+                position = position_fill(vjust = 0.5),
+                size = 3,
+                hjust = 0.5)+
+  xlim(c(-1,3))+
+  labs(title = "Overall Major distribution")+
+    theme(panel.background = element_blank(),
+          axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank())
+  
+  
+
+```
+
+2.2
+```{r}
+education %>% 
+  filter(Sex == "Total"& `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(total_degree_holders = sum(`Bachelor's Degree Holders`),
+            SE = round(sum(`Science and Engineering`)/total_degree_holders,2),
+            SE_related = round(sum(`Science and Engineering Related Fields`)/total_degree_holders,2),
+            Business = round(sum(Business)/total_degree_holders,2),
+            Education = round(sum(Education)/total_degree_holders,2),
+            Arts = round(sum(`Arts, Humanities and Others`)/total_degree_holders,2)) %>% 
+  select(-total_degree_holders) %>% 
+  pivot_longer(-State) %>% 
+  ggplot(aes(y=State,
+             x=value,
+             fill=name))+
+  geom_col()+
+  geom_vline(xintercept = 0.5,
+             na.rm = TRUE,
+             color = "grey50")
+```
+
+What about including sex?
+3.1
+```{r}
+male <-
+education %>% 
+  filter(Sex == "Male" & `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(male_total = sum(`Bachelor's Degree Holders`))
+
+female <-
+education %>% 
+  filter(Sex == "Female" & `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(female_total = sum(`Bachelor's Degree Holders`))
+
+total <-
+education %>% 
+  filter(Sex == "Total" & `Age Group`!="25 and older") %>% 
+  group_by(State) %>% 
+  summarize(total_degree_holders = sum(`Bachelor's Degree Holders`))
+
+
+male %>% 
+  left_join(female,by = "State") %>% 
+  left_join(total, by = "State") %>% 
+  summarize(male_total = sum(male_total),
+            female_total = sum(female_total),
+            total = sum(total_degree_holders))%>%
+  mutate(male_percent = round(male_total/total,4),
+         female_percent = round(female_total/total,4)) %>% 
+  select(c(total,
+           male_percent,
+           female_percent))%>%
+  pivot_longer(-total) %>%
+  ggplot(aes(y=value,
+             x=2,
+             fill=name))+
+  geom_col()+
+  geom_text(aes(x = 2,
+                label = paste0(value*100,"%")),
+                position = position_fill(vjust = 0.5),
+                size = 3,
+                hjust = 0.5)
+  
+```
+
+47.12% male with BA, 52.88% female with BA.
+
+3.2
+```{r}
+education2 <-
+education %>% 
+  pivot_longer(cols = `Science and Engineering`: `Arts, Humanities and Others`,
+               names_to = "major",
+               values_to = "amount") %>% 
+  select(-`Bachelor's Degree Holders`)
+
+
+education2 %>% 
+  filter(`Age Group`!="25 and older") %>% 
+  group_by(major,Sex) %>% 
+  summarize(amount = sum(amount)) %>% 
+  pivot_wider(id_cols = major,
+              names_from = Sex,
+              values_from = amount) %>% 
+  mutate(female_percent = round(Female/Total,4),
+         male_percent = round(Male/Total,4)) %>% 
+  select(major,
+         female_percent,
+         male_percent) %>% 
+  pivot_longer(-major) %>% 
+  ggplot(aes(x = major, y= value, fill = name))+
+  geom_col()+
+  geom_text(aes(x = major,
+                label = paste0(value*100,"%")),
+                position = position_fill(vjust = 0.5),
+                size = 2.5,
+                hjust = 0.5)+
+   theme(axis.text.x = element_text(angle = 15))
+  
+
+
+
+
+```
+
+3.3
+```{r}
+education2
+
+education2 %>% 
+  filter(Sex == "Male" & `Age Group`!="25 and older") %>% 
+  group_by(major,`Age Group`) %>% 
+  summarize(male_total = sum(amount)) %>% 
+  left_join(education2 %>% 
+            filter(Sex == "Female") %>% 
+            group_by(major,`Age Group`) %>% 
+            summarize(female_total = sum(amount)),
+            by = c("major", "Age Group")) %>% 
+  mutate(total = male_total+female_total,
+         male_percent = round(male_total/total,4),
+         female_percent = round(female_total/total,4)) %>% 
+  select(male_percent,
+         female_percent,
+         major,
+         `Age Group`) %>% 
+  pivot_longer(-major & -`Age Group`) %>% 
+  ggplot(aes(x = `Age Group`,
+             y = value,
+             col = name,
+             group =name))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~major)
+
+
+  
+
+
+```
+
+3.4
+```{r}
+education2 %>% 
+  filter(Sex != "Total" & `Age Group`!="25 and older") %>% 
+  group_by(major,Sex) %>% 
+  summarize(amount = sum(amount)) %>% 
+  pivot_wider(id_cols = Sex,
+              names_from = major,
+              values_from = amount) %>% 
+  mutate(total_BA = `Arts, Humanities and Others`+
+           Business+
+           Education+
+           `Science and Engineering`+
+           `Science and Engineering Related Fields`,
+         `Arts, Humanities and Others` = round(`Arts, Humanities and Others`/total_BA,4),
+         Business = round(Business/total_BA,4),
+         Education = round(Education/total_BA,4),
+         `Science and Engineering` = round(`Science and Engineering`/total_BA,4),
+         `Science and Engineering Related Fields` = round(`Science and Engineering Related Fields`/total_BA,4)) %>% 
+  select(-total_BA) %>% 
+  pivot_longer(-Sex) %>% 
+  ggplot(aes(x = Sex, 
+             y = value,
+             fill = name))+
+  geom_col()+
+  geom_text(aes(x = Sex,
+                label = paste0(value*100,"%")),
+                position = position_fill(vjust = 0.5),
+                size = 2.5,
+                hjust = 0.5)
+  
+  
+
+  
+```
+
+3.5
+```{r}
+education2 %>% 
+  filter(Sex != "Total" & `Age Group`!="25 and older") %>% 
+  group_by(major,Sex,`Age Group`) %>% 
+  summarize(amount = sum(amount)) %>% 
+  pivot_wider(id_cols = Sex:`Age Group`,
+              names_from = major,
+              values_from = amount) %>% 
+  mutate(total_BA = `Arts, Humanities and Others`+
+           Business+
+           Education+
+           `Science and Engineering`+
+           `Science and Engineering Related Fields`,
+         `Arts, Humanities and Others` = round(`Arts, Humanities and Others`/total_BA,4),
+         Business = round(Business/total_BA,4),
+         Education = round(Education/total_BA,4),
+         `Science and Engineering` = round(`Science and Engineering`/total_BA,4),
+         `Science and Engineering Related Fields` = round(`Science and Engineering Related Fields`/total_BA,4)) %>% 
+  select(-total_BA) %>% 
+  pivot_longer(-Sex & -`Age Group`) %>%
+  ggplot(aes(x = `Age Group`,
+             y = value,
+             col = name,
+             group =name))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~Sex)
+  
+  
+```
+

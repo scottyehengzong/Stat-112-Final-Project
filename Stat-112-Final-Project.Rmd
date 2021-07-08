@@ -26,6 +26,7 @@ education_MN <-
   education %>% 
   filter(State == "Minnesota")
 ```
+
 Generally
 1.1
 ```{r}
@@ -107,15 +108,14 @@ education %>%
                 size = 3,
                 hjust = 0.5)+
   xlim(c(-1,3))+
-  labs(title = "Overall Major distribution")+
+  labs(title = "Overall Major Distribution")+
     theme(panel.background = element_blank(),
           axis.title = element_blank(),
           axis.text = element_blank(),
           axis.ticks = element_blank())
-  
-  
-
 ```
+
+> This graph divides all majors into five categories and displays the proportion of each category. The data used to produce this graph was based on the 2019 information and included both male and female from all states throughtout the United States. We can see that 35.4% of the majors are under the SE (Science and Engineering) category. In addition, SE related majors also occupy 9.81% of all majors, which made SE and its related majors account for 45.21% of all majors throughout the United States in 2019. On the other hand, majors under the education category only hold 11.74% of all majors in 2019, which is only about one fourth of the SE and its related category. Majors under Business and Arts caetegory hold 20.24% and 23% of all majors respesctively. Next, we will look at the proportion of each category in each state.
 
 2.2
 ```{r}
@@ -138,6 +138,8 @@ education %>%
              na.rm = TRUE,
              color = "grey50")
 ```
+
+> In general, we can see that the distribution of majors in each state is similar to the overall distribution throughout the U.S. as we saw in the previous graph. However, the Education category hold equal or even more proportion than the Business category in some states such as Wyoming, West Virginia, and South Dakota. One interesting thing to note is that District of Columbia had the largest proportion for both Arts and SE & its related categories, while the Education category hold the smallest proportion throughout the nation. 
 
 What about including sex?
 3.1
@@ -227,8 +229,6 @@ education2 %>%
 
 3.3
 ```{r}
-education2
-
 education2 %>% 
   filter(Sex == "Male" & `Age Group`!="25 and older") %>% 
   group_by(major,`Age Group`) %>% 
@@ -254,11 +254,9 @@ education2 %>%
   geom_line()+
   facet_wrap(~major)
 
-
-  
-
-
 ```
+
+> Now we take one more step to look at the sex distribution of each age group in each category. We can see that for all five categories, the proportion of female bachelor's degree holders decreases for older age groups. On the other hand, the proportion of male bachelor degree holders increases for older age  groups. This pattern isn't too surprising because back in the old days, people tended to think of women as staying at home and taking care of the children; therefore, women were less likely to achieve a bachelor's degree. Fortunately, the proportion of demale bachelor's degree is higher in the younger age groups for all five categories, which suggests that the feminist movement is getting some positive results.
 
 3.4
 ```{r}
@@ -290,11 +288,9 @@ education2 %>%
                 position = position_fill(vjust = 0.5),
                 size = 2.5,
                 hjust = 0.5)
-  
-  
-
-  
 ```
+
+> We now take a different approach to look at the distribution of majors for both male and female. From this graph, we can see that the distribution of majors is much more even for female than male. For female, Arts and SE categories account for the largest proportion and both hold approximately 25% of all majors. For male, we can see that almost half of the majors in bachelor's degree were in the SE category, and only about 5% of the majors were in the Education category.
 
 3.5
 ```{r}
@@ -328,3 +324,5 @@ education2 %>%
   
 ```
 
+
+> Next, we take one more step to look at the distribution of majors among different age groups for both male and female. We notice that although the proportion of each category is different for both sex, the trend among different age groups is very similar for both sex. For Arts & Humanity category, we can see that the proportion is higher in younger age groups than in older age groups regardless of sex, which means Arts & Humanity majors got more popular in the past century. For Business majors, we see that the `40 to 64` age group has the highest proportion for both sex, which suggests that Business majors were more popular between 1975 and 1999 than before or after that time period. For Education majors, we see higher proportions in older age groups than younger age groups for both sex, which suggests education majors got less popular in the past century. For Science and Engineering (SE) majors, we see higher proportions in younger age groups than in older age groups for both sex, but the increase in female was much more steep compared to the increase in male. Lastly, the proportion of SE and related majors was quite steady among all age groups for both sex, as we can see the line is pretty flat.

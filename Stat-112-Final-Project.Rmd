@@ -1,15 +1,21 @@
 ---
-title: "Untitled"
-author: "Scott Yeheng Zong"
+title: "Bacholer's Degree Holders in the U.S."
+author: "Yeheng Zong, Jason Shi, Yike Zhou"
 date: "7/5/2021"
-output: html_document
+output: 
+  html_document:
+    keep_md: TRUE
+    toc: TRUE
+    toc_float: TRUE
+    df_print: paged
+    code_download: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
 ```
 
-```{r load_data}
+```{r load_data, include=FALSE}
 library(tidyverse)
 library(lubridate)
 library(openintro)     
@@ -22,9 +28,6 @@ library(ggthemes)
 theme_set(theme_minimal())
 education <- read_csv("education.csv")
 population <- read_csv("population2019.csv")
-education_MN <-
-  education %>% 
-  filter(State == "Minnesota")
 ```
 
 > Introduction and background：
@@ -34,7 +37,7 @@ Attaining a bachelor's degree has always triggered a question: Is it worth it? I
 We obtain our data from Kaggle. The data contains information on the number of students that majored in different topics of study at universities in the United States in 2019 and is broken down by age group, sex, and state. There are 9 variables in total. We mainly focus on the age group over 25 years old and use the given information to create multiple visualizations, including map, column graphs, linear graphs, etc. We then do a separate analysis regarding different maps and graphs to seek the answer for factors that affect students choosing to pursue college education.
 
 ## In General
-```{r}
+```{r, echo=FALSE}
 states_map <- map_data("state")
 
 education %>% 
@@ -62,7 +65,7 @@ education %>%
 > Let's first look at the geographic distribution of bachelor's degree holders throughout the nation. The graph above displays the total number of bachelor's degree holders throughout the United States. The deeper the color of the state, the larger the number of bachelor's degree holders is in that state. In general, we can see California, Texas, Florida, and New York have the most bachelor's degree holders. On the other hand, the large number of bachelor's degree holders could be due to the large population base or multiple universities in those states.  
 
 
-```{r}
+```{r, echo=FALSE}
 states_map <- map_data("state")
 
 education %>% 
@@ -92,9 +95,13 @@ education %>%
 
 > Following what being said above, we now take into account the factor of population. In order to do that, we edit the unit from total degree holders to total degree holders per 10000 people. As we rule out the factor of population that might interfere with the resulting colored map, it's clear that states with deeper colors have totally changed. Bachelor degree holders density(total degree holders per 10000 people) is higher in Colorado, Washington, Virginia, New Jersey and Massachusetts. 
 
-Major distribution
-2.1
-```{r}
+
+
+## Major distribution
+
+>Now, let us take a deeper look at the Bachelor's degree holders by looking at the major distribution.
+
+```{r, echo=FALSE}
 education %>% 
   filter(Sex == "Total" & `Age Group`!="25 and older") %>% 
   summarize(total_degree_holders = sum(`Bachelor's Degree Holders`),
@@ -109,24 +116,27 @@ education %>%
              y = value,
              fill = name))+
   geom_col(color = "white")+
-  coord_polar(theta = "y", start = 1.65)+
+  coord_polar(theta = "y", start = 0)+
   geom_text(aes(x = 1,
                 label = paste0(value*100,"%")),
                 position = position_fill(vjust = 0.5),
                 size = 3,
                 hjust = 0.5)+
   xlim(c(-1,3))+
-  labs(title = "Overall Major Distribution")+
+  labs(title = "Major distribution of BA degree holders in the U.S.",
+       fill = "Major")+
     theme(panel.background = element_blank(),
+          panel.grid = element_blank(),
           axis.title = element_blank(),
           axis.text = element_blank(),
-          axis.ticks = element_blank())
+          axis.ticks = element_blank(),
+          )
 ```
 
 > This graph divides all majors into five categories and displays the proportion of each category. We can see that 35.4% of the majors are under the SE (Science and Engineering) category. In addition, SE related majors also occupy 9.81% of all majors, which made SE and its related majors account for 45.21% of all majors throughout the United States in 2019. On the other hand, majors under the education category only hold 11.74% of all majors in 2019, which is only about one fourth of the SE and its related category. Majors under Business and Arts caetegory hold 20.24% and 23% of all majors respesctively. Next, we will look at the proportion of each category `in each state`.
 
-2.2
-```{r}
+
+```{r, echo=FALSE}
 education %>% 
   filter(Sex == "Total"& `Age Group`!="25 and older") %>% 
   group_by(State) %>% 
@@ -142,16 +152,21 @@ education %>%
              x=value,
              fill=name))+
   geom_col()+
-  geom_vline(xintercept = 0.5,
-             na.rm = TRUE,
-             color = "grey50")
+  labs(title = "Major distribution of BA degree holders in each state",
+       x = NULL,
+       fill = "Major")+
+  theme(panel.background = element_blank(),
+        panel.grid = element_blank())
 ```
 
 > In general, we can see that the distribution of majors in each state is similar to the overall distribution throughout the U.S. as we saw in the previous graph. However, the Education category hold equal or even more proportion than the Business category in some states such as Wyoming, West Virginia, and South Dakota. One interesting thing to note is that District of Columbia had the largest proportion for both Arts and SE & its related categories, while the Education category hold the smallest proportion throughout the nation. 
 
-What about including sex?
-3.1
-```{r}
+
+## Including Sex and Age Group 
+
+>We have not including sex and age group yet, which are two important variables that help us explore more about the data set. For example, what does the general sex distribution look like? What about the sex distribution in different major and age group? What will the major distribution look like in different sex and age group? The following graphs will provide answers to the questions that we mentioned above.
+
+```{r, echo=FALSE}
 male <-
 education %>% 
   filter(Sex == "Male" & `Age Group`!="25 and older") %>% 
@@ -191,14 +206,24 @@ male %>%
                 label = paste0(value*100,"%")),
                 position = position_fill(vjust = 0.5),
                 size = 3,
-                hjust = 0.5)
+                hjust = 0.5)+
+  labs(title = "Sex ditribution in BA degree holders",
+       x = NULL,
+       y = NULL,
+       fill = "Sex")+
+  theme(panel.background = element_blank(),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(hjust = 0.5)
+        )
   
 ```
 
-> We are also curious about sex distribution in bachelor's degree holders. To begin with, we create a simple visualization of showing the proportion of each sex group over 25 years old in bachelor's degree holders. The visualization clearly tells that the female group constitutes a larger portion of bachelor's degree holders, 5.76% higher than the male group. `What about the sex distribution in each of the five categories we discussed earlier?` 
+> We are curious about sex distribution in bachelor's degree holders. To begin with, we create a simple visualization of showing the proportion of each sex group over 25 years old in bachelor's degree holders. The visualization clearly tells that the female group constitutes a larger portion of bachelor's degree holders, 5.76% higher than the male group. 
 
-3.2
-```{r}
+>What about the sex distribution in each of the five categories we discussed earlier?` 
+
+```{r, echo=FALSE}
 education2 <-
 education %>% 
   pivot_longer(cols = `Science and Engineering`: `Arts, Humanities and Others`,
@@ -227,14 +252,21 @@ education2 %>%
                 position = position_fill(vjust = 0.5),
                 size = 2.5,
                 hjust = 0.5)+
-   theme(axis.text.x = element_text(angle = 15))
+  labs(title = "Sex distribution in different majors",
+       y = NULL,
+       fill = "Sex")+
+  scale_x_discrete(label =c("Arts, Humanity\n and Others", "Business", "Education", "Science and\n Engineering", "Science and\n Engineering\n Related Fields") )+
+   theme(panel.background = element_blank(),
+         panel.grid = element_blank(),
+         axis.text.y = element_blank(),
+         axis.ticks = element_blank(),
+         plot.title = element_text(hjust = 0.5))
 
 ```
 
 > From the graph, we can definitely tell that the female group often dominates in art,humanities and others, education, and science and engineering related fields, but male group represents a higher proportion in business and science and engineering fields. This result is not surprising, as we often see more females working in humanities organizations and in school, and more males working as businessmen and engineers. The visualization represents the trend of different sex group choosing their major fields. 
 
-3.3
-```{r}
+```{r, echo=FALSE}
 education2 %>% 
   filter(Sex == "Male" & `Age Group`!="25 and older") %>% 
   group_by(major,`Age Group`) %>% 
@@ -258,14 +290,22 @@ education2 %>%
              group =name))+
   geom_point()+
   geom_line()+
+  labs(title = "Sex distribution in each age group in different majors",
+       y = NULL,
+       col = "Sex")+
+  scale_x_discrete(label = c("25-39","40-64","65+"))+
+  theme(panel.background = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        strip.text = element_text(size = 6.2)
+        )+
   facet_wrap(~major)
 
 ```
 
 > Now we take one more step to look at the sex distribution of `each age group` in each category. We can see that for all five categories, the proportion of female bachelor's degree holders decreases for older age groups. On the other hand, the proportion of male bachelor degree holders increases for older age  groups. This pattern isn't too surprising because back in the old days, people tended to think of women as staying at home and taking care of the children; therefore, women were less likely to achieve a bachelor's degree. Fortunately, the proportion of demale bachelor's degree is higher in the younger age groups for all five categories, which suggests that the feminist movement is getting some positive results.
 
-3.4
-```{r}
+```{r, echo=FALSE}
 education2 %>% 
   filter(Sex != "Total" & `Age Group`!="25 and older") %>% 
   group_by(major,Sex) %>% 
@@ -293,13 +333,21 @@ education2 %>%
                 label = paste0(value*100,"%")),
                 position = position_fill(vjust = 0.5),
                 size = 2.5,
-                hjust = 0.5)
+                hjust = 0.5)+
+  labs(title = "Major distribution for female and male",
+       y = NULL,
+       fill = "Major")+
+  theme(panel.background = element_blank(),
+         panel.grid = element_blank(),
+         axis.text.y = element_blank(),
+         axis.ticks = element_blank(),
+        plot.title = element_text(hjust = 0.5))
+  
 ```
 
 > What if we take a different approach to look at the distribution of majors for both male and female? From this graph, we can see that the distribution of majors is much more even for female than male. For female, Arts and SE categories account for the largest proportion and both hold approximately 25% of all majors. For male, we can see that almost half of the majors in bachelor's degree were in the SE category, and only about 5% of the majors were in the Education category.
 
-3.5
-```{r}
+```{r, echo=FALSE}
 education2 %>% 
   filter(Sex != "Total" & `Age Group`!="25 and older") %>% 
   group_by(major,Sex,`Age Group`) %>% 
@@ -325,6 +373,13 @@ education2 %>%
              group =name))+
   geom_point()+
   geom_line()+
+  scale_x_discrete(label = c("25-39","40-64","65+"))+
+  labs(title = "Distribution of majors among different age groups for female and male",
+       y = NULL,
+       col = "Major")+
+  theme(panel.background = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())+
   facet_wrap(~Sex)
   
   

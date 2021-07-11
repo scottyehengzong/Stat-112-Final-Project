@@ -1,7 +1,7 @@
 ---
 title: "Bacholer's Degree Holders in the U.S."
 author: "Yeheng Zong, Jason Shi, Yike Zhou"
-date: "7/5/2021"
+date: "7/10/2021"
 output: 
   html_document:
     keep_md: TRUE
@@ -15,11 +15,13 @@ output:
 
 
 
-> Introduction and background：
-Attaining a bachelor's degree has always triggered a question: Is it worth it? It often takes 3-5 years and high tuition to attain a college degree. For many students; however, college education is the indispensable path leading to success in the workforce. Unemployment rate among Americans who hold a college degree tends to be lower than those who do not. Moreover, jobs that require a higher education background are usually more lucrative. Seeking a better job and a higher income, students see college education as a fascinating give-and-take investment. In this blog, we are going to explore sex, state, major and age distribution in bachelor's degree holders. The question we are trying to answer is the trend of bachelor's degree holders choosing their major based on different age groups and sex.
+## Introduction and background
 
-> Data collection:
-We obtain our data from Kaggle. The data contains information on the number of students that majored in different topics of study at universities in the United States in 2019 and is broken down by age group, sex, and state. There are 9 variables in total. We mainly focus on the age group over 25 years old and use the given information to create multiple visualizations, including map, column graphs, linear graphs, etc. We then do a separate analysis regarding different maps and graphs to seek the answer for factors that affect students choosing to pursue college education.
+>Attaining a bachelor's degree has always triggered a question: Is it worth it? It often takes 3-5 years and high tuition to attain a college degree. For many students; however, college education is the indispensable path leading to success in the workforce. Unemployment rate among Americans who hold a college degree tends to be lower than those who do not. Moreover, jobs that require a higher education background are usually more lucrative. Seeking a better job and a higher income, students see college education as a fascinating give-and-take investment. In this blog, we are going to explore sex, state, major and age distribution in bachelor's degree holders. The question we are trying to answer is the trend of bachelor's degree holders choosing their major based on different age groups and sex.
+
+## Data collection
+
+>We obtain our data from Kaggle. The data contains information on the number of students that majored in different topics of study at universities in the United States in 2019 and is broken down by age group, sex, and state. There are 9 variables in total. We mainly focus on the age group over 25 years old and use the given information to create multiple visualizations, including map, column graphs, linear graphs, etc. We then do a separate analysis regarding different maps and graphs to seek the answer for factors that affect students choosing to pursue college education.
 
 ## In General
 ![](Stat-112-Final-Project_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
@@ -55,7 +57,7 @@ We obtain our data from Kaggle. The data contains information on the number of s
 
 > We are curious about sex distribution in bachelor's degree holders. To begin with, we create a simple visualization of showing the proportion of each sex group over 25 years old in bachelor's degree holders. The visualization clearly tells that the female group constitutes a larger portion of bachelor's degree holders, 5.76% higher than the male group. 
 
->What about the sex distribution in each of the five categories we discussed earlier?` 
+>What about the sex distribution in each of the five categories we discussed earlier?
 
 ![](Stat-112-Final-Project_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
@@ -75,5 +77,6 @@ We obtain our data from Kaggle. The data contains information on the number of s
 > Next, we take one more step to look at the distribution of majors among different age groups for both male and female. We notice that although the proportion of each category is different for both sex, the trend among different age groups is very similar for both sex. For Arts & Humanity category, we can see that the proportion is higher in younger age groups than in older age groups regardless of sex, which means Arts & Humanity majors got more popular in the past century. For Business majors, we see that the `40 to 64` age group has the highest proportion for both sex, which suggests that Business majors were more popular between 1975 and 1999 than before or after that time period. For Education majors, we see higher proportions in older age groups than younger age groups for both sex, which suggests education majors got less popular in the past century. For Science and Engineering (SE) majors, we see higher proportions in younger age groups than in older age groups for both sex, but the increase in female was much more steep compared to the increase in male. Lastly, the proportion of SE and related majors was quite steady among all age groups for both sex, as we can see the line is pretty flat.
 
 
-> Conclusion:
-  In this project, we found bachelor’s degree holders have different choices of major based on their sex and age group. According to the pure sex analysis, females tend to pursue bachelor degree more than males. A reasonable explanation for this result is that females are more eager to improve their social status and believe college education provides more resources and opportunities. Moreover, the gap between males and females’ choices of major tends to be shortened as their age group becomes younger. This suggests a balance of sex in career choices and an improvement of gender equality in the workforce.
+## Conclusion
+
+>In this project, we found bachelor’s degree holders have different choices of major based on their sex and age group. According to the pure sex analysis, females tend to pursue bachelor degree more than males. A reasonable explanation for this result is that females are more eager to improve their social status and believe college education provides more resources and opportunities. Moreover, the gap between males and females’ choices of major tends to be shortened as their age group becomes younger. This suggests a balance of sex in career choices and an improvement of gender equality in the workforce.
